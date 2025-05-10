@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css2?family=Mooli&display=swap");
+
+#content {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    text-align: center;
+}
+header {
+    font-family: 'Mooli';
+    color: white;
+    background-color: mediumslateblue;
+    text-align: center;
+}
+h1 {
+    margin-top: 0;
+    margin: 0 auto;
+    padding-top: 20px;
+    max-width: 200px;
+    font-size: 50px;
+}
+.nav {
+    padding-bottom: 25px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.nav button {
+    margin-bottom: 0;
+    background-color: mediumslateblue;
+    color: white;
+    border: 0;
+    font-size: 30px;
+    font-weight: bold;
+    padding-top: 25px;
+}
+a {
+    display: block;
+    margin-top: 10px;
+    color: white;
+    font-weight: bold;
+}
+main {
+    background-color: rgb(234, 234, 234);
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+main h2 {
+    margin-top: 0;
+    font-size: 30px;
+}
+.gallery {
+    grid-template-columns: 1fr;
+
+}
+img {
+    max-width: 100%;
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    border: 10px;
+    border-color: white;
+    border-style: solid;
+    box-shadow: 5px 5px 10px;
+}
+footer {
+    background-color: mediumslateblue;
+    padding: 15px;
+    color: white;
+    text-align: left;
+    font-weight: bold;
+}
+footer p {
+    margin-bottom: 0;
+    margin: 0 auto;
+}
+@media screen and (min-width: 750px) {
+    h1{
+        max-width: 100%;
+    }
+    .nav a {
+        display: none;
+    }
+    .gallery {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-left: 30px;
+        margin-right: 30px;
+    }
+}
+@media screen and (min-width: 1000px) {
+    h1 {
+        padding-top: 30px;
+    }
+    .nav button {
+        display: none;
+    }
+    .nav a {
+        display: inline-block;
+    }
+    .nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        padding-top: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .gallery {
+        grid-template-columns: 1fr 1fr 1fr;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    footer p {
+        max-width: 1200px;
+    }
+}
