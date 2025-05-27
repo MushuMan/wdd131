@@ -4,7 +4,7 @@
     color: #473144;
 }
 header {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 h1 {
@@ -48,12 +48,40 @@ h2 {
     display: grid;
     margin: 0 auto;
     grid-template-columns: 2fr 1fr;
-    max-width: 900px;
+    max-width: 1200px;
 }
 .book {
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
+.about {
+    text-align: right;
+    margin-right: 20px;
+    margin-top: 20px;
+    padding-right: 25px;
+    border-color: #EFC69B;
+    border-right-style: solid;
+    line-height: 10px;
+}
+.date {
+    font-size: 18px;
+}
+.overview {
+    margin-top: 5px;
+    text-align: center;
+}
+.cover {
+    max-width: 250px;
+}
+.title {
+    text-align: left;
+}
+.description {
+    text-align: left;
+}
 #filter {
     text-align: center;
+    border-color: #EFC69B;
+    border-style: solid;
+    margin: 30px;
 }
