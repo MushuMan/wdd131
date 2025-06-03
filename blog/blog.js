@@ -57,7 +57,7 @@ articles.forEach(function(item){
 			<p class="description">${item.description}</p>
 		</div>
 		`;
-	book.innerHTML = html
-	library.appendChild(book)
+	book.innerHTML = html;
+	library.appendChild(book);
 });
 
