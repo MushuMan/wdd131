@@ -17,6 +17,7 @@ const hikes = [
     imgAlt: "Image of Bechler Falls",
     distance: "3 miles",
     tags: ["Easy", "Yellowstone", "Waterfall"],
+    difficulty: 1,
     description:
       "Beautiful short hike in Yellowstone along the Bechler river to Bechler Falls",
     directions:
@@ -30,6 +31,7 @@ const hikes = [
     imgAlt: "Image of Bechler Falls",
     distance: "3 miles",
     tags: ["Easy", "Tetons"],
+    difficulty: 1,
     description: "Beautiful short (or long) hike through Teton Canyon.",
     directions:
       "Take Highway 33 East to Driggs. Turn left onto Teton Canyon Road. Follow that road for a few miles then turn right onto Staline Raod for a short distance, then left onto Alta Road. Veer right after Alta back onto Teton Canyon Road. There is a parking area at the trailhead.",
@@ -43,6 +45,7 @@ const hikes = [
     imgAlt: "Image of Bechler Falls",
     distance: "7 miles",
     tags: ["Moderate", "Yellowstone", "Waterfall"],
+    difficulty: 3,
     description: "Beautiful hike through Bechler meadows to Denanda Falls",
     directions:
       "Take Highway 20 north to Ashton. Turn right into the town and continue through. Follow that road for a few miles then turn left again onto the Cave Falls road. Drive to until you see the sign for Bechler Meadows on the left. Turn there. There is a parking area at the trailhead.",
@@ -55,6 +58,7 @@ const hikes = [
     imgAlt: "Image of Bechler Falls",
     distance: "2.2 miles",
     tags: ["Easy"],
+    difficulty: 1,
     description:
       "Beautiful hike along the Henry's Fork of the Snake River to a set of rapids.",
     directions:
@@ -68,6 +72,7 @@ const hikes = [
     imgAlt: "Image of Menan Butte",
     distance: "3.4 miles",
     tags: ["Moderate", "View"],
+    difficulty: 2,
     description:
       "A steep climb to one of the largest volcanic tuff cones in the world. 3.4 miles is the full loop around the crater, can be shortened.",
     directions:
@@ -116,7 +121,63 @@ function search() {
 
     let sortedHikes = filteredHikes.sort(compareHikes);
     console.log(sortedHikes);
+
+    hikeContainer.textContent = '';
+
+    sortedHikes.forEach(hike => renderHike(hike));
 };
+
+let hikeContainer = document.querySelector('#hikeContainer');
 
 let button = document.querySelector('button');
 button.addEventListener('click', search);
+
+let random = Math.floor(Math.random() * hikes.length);
+console.log(random);
+
+function tagTemplate(tags) {
+  return tags.map(tag => `
+      <button>${tag}</button>
+    `).join(' ');
+};
+
+function difficultyTemplate(difficulty) {
+  let html = `<span class="difficulty" role="img" aria-label="difficulty: ${difficulty} out of 5">Difficulty: `;
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= difficulty) {
+      html += `<span aria-hidden="true" class="icon-boot">🥾</span>`;
+    } else {
+      html += `<span aria-hidden="true" class="icon-empty">☐</span>`;
+    };
+  };
+
+  html += `</span>`;
+  return html;
+};
+
+function hikeTemplate(hike) {
+  return `<div class="hikeCard">
+    <div class="hikeContent">
+      <h2>${hike.name}</h2>
+      <div class="hikeTags">
+        ${tagTemplate(hike.tags)}
+      </div>
+      <p>${hike.description}</p>
+      <div class="hikeRatings">
+        ${difficultyTemplate(hike.difficulty)}
+      </div>
+    </div>
+  </div>`
+};
+
+function renderHike(hike) {
+  let html = hikeTemplate(hike);
+  hikeContainer.innerHTML += html;
+};
+
+function init() {
+  renderHike(hikes[random]);
+};
+
+init();

@@ -67,6 +67,7 @@ hr {
     border-radius: 5px;
     max-width: 400px;
     margin: 0 auto;
+    margin-bottom: 20px;
     padding-bottom: 50px;
     display: flex;
     flex-direction: column;
@@ -77,15 +78,22 @@ hr {
     margin: 20px auto;
     margin-bottom: 0px;
 }
+.notRecipeImg {
+    margin-right: 20px;
+}
 .tags {
     border: 3px solid darkgrey;
+    display: inline-block;
     border-radius: 3px;
-    max-width: 30%;
+    inline-size: fit-content;
     font-size: 27px;
     font-weight: bold;
     text-align: center;
     margin-top: 7px;
     margin-left: 20px;
+    margin-bottom: 0px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 .recipeName {
     font-size: 40px;
@@ -169,7 +177,7 @@ footer a {
     }
     .tags {
         margin: 0px;
-        width: 350px;
+        margin-bottom: 5px;
     }
     .recipeName {
         margin: 0px;

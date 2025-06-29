@@ -279,3 +279,80 @@ const recipes = [
 		rating: 4
 	}
 ];
+
+let randomNum = Math.floor(Math.random() * recipes.length);
+
+const recipesContainer = document.querySelector('#recipes');
+const searchBar = document.querySelector('#searchBar');
+const searchButton = document.querySelector('#searchButton');
+
+function search() {
+	let recipeQuery = searchBar.value;
+
+	let filteredRecipes = recipes.filter(function(recipe){
+		return (recipe.name.toLowerCase().includes(recipeQuery.toLowerCase())) || (recipe.description.toLowerCase().includes(recipeQuery.toLowerCase())) || (recipe.tags.find(tag => tag.toLowerCase().includes(recipeQuery)));
+	});
+
+	function compareRecipes(a, b) {
+		if (a.name.toLowerCase() < b.name.toLowerCase()) {
+			return -1;
+		} else if (a.name.toLowerCase() > b.name.toLowerCase()) {
+			return 1;
+		}
+		return 0;
+	};
+
+	let sortedRecipes = filteredRecipes.sort(compareRecipes);
+
+	recipesContainer.textContent = '';
+
+	sortedRecipes.forEach(recipe => renderRecipe(recipe));
+};
+
+searchButton.addEventListener('click', search);
+
+function tagTemplate(tags) {
+  return tags.map(tag => `
+      <p class="tags">${tag.charAt(0).toUpperCase() + tag.slice(1)}</p>
+    `).join(' ');
+};
+
+function ratingTemplate(rating) {
+  let html = `<span class="recipeRating" role="img" aria-label="Rating: ${rating} out of 5">`;
+
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      html += `<span aria-hidden="true" class="iconStar">⭐</span>`;
+    } else {
+      html += `<span aria-hidden="true" class="iconStarEmpty">☆</span>`;
+    };
+  };
+
+  html += `</span>`;
+  return html;
+};
+
+function recipeTemplate(recipe) {
+	return `<div class="recipe">
+                <img class="recipeImg" src=${recipe.image}  alt="Picture of food">
+                <div class="notRecipeImg">
+					${tagTemplate(recipe.tags)}
+                    <h2 class="recipeName">${recipe.name}</h2>
+                    ${ratingTemplate(recipe.rating)}
+                    <p class="hidden description">${recipe.description}</p>
+                </div>
+            </div>`;
+};
+
+function renderRecipe(recipe) {
+	let html = recipeTemplate(recipe);
+	recipesContainer.innerHTML += html;
+};
+
+function init() {
+	renderRecipe(recipes[randomNum]);
+};
+
+init();
+
+
