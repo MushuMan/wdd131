@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Nephi Zaugg">
+    <meta name="description" content="Pixel art editor">
+    <script defer src="pixelPerfect.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="pixelPerfect.css">
+    <title>Pixel Perfect</title>
+</head>
+<body>
+    <img src="Pixel Perfect.png" alt="Logo">
+    <h1>Pixel Perfect</h1>
+    <div class="controls">
+        <label for="colorPicker">Pick a color:</label>
+        <input type="color" id="colorPicker" value="#000000">
+        <button id="eraserButton">Eraser</button>
+        <button id="paintbrushButton" class="active">Paintbrush</button>
+        <button id="eyedropperButton">Eyedropper</button>
+        <button id="clearButton">Clear Canvas</button>
+        <button id="saveButton">Save as PNG</button>
+        <label for="rowsInput">Rows:</label>
+        <input type="number" id="rowsInput" class="inputOption" min="1" max="64" value="16">
+        <label for="columnsInput">Columns:</label>
+        <input type="number" id="columnsInput" class="inputOption" min="1" max="64" value="16">
+        <button id="makeGridButton">Generate Grid</button>
+        <label for="pixelSizeInput">Pixel size:</label>
+        <input type="number" id="pixelSizeInput" class="inputOption" min="5" max="64" value="20">
+        <button id="undoButton">Undo</button>
+        <button id="redoButton">Redo</button>
+        <div id="palette">
+            <div class="colorOption" data-color="#000000" style="background-color: #000000;"></div>
+            <div class="colorOption" data-color="#ff0000" style="background-color: #ff0000;"></div>
+            <div class="colorOption" data-color="#00ff00" style="background-color: #00ff00;"></div>
+            <div class="colorOption" data-color="#0000ff" style="background-color: #0000ff;"></div>
+            <div class="colorOption" data-color="#ffff00" style="background-color: #ffff00;"></div>
+            <div class="colorOption" data-color="#ff00ff" style="background-color: #ff00ff;"></div>
+            <div class="colorOption" data-color="#00ffff" style="background-color: #00ffff;"></div>
+            <div class="colorOption" data-color="#ffffff" style="background-color: #ffffff;"></div>
+        </div>
+    </div>
+    <div id="grid"></div>
+</body>
+</html>
