@@ -13,11 +13,16 @@ const paintbrushButton = document.getElementById('paintbrushButton');
 const eyedropperButton = document.getElementById('eyedropperButton');
 const undoButton = document.getElementById('undoButton');
 const redoButton = document.getElementById('redoButton');
+const toggleGridButton = document.getElementById('toggleGridButton');
+const brushSizeInput = document.getElementById('brushSize');
+let brushSize = parseInt(brushSizeInput.value);
+let gridLinesVisible = true;
 let isPainting = false;
 let currentTool = 'paintbrush';
 let historyList = [];
 let redoList = [];
 let scale = 1
+let currentAction = null;
 const minScale = 1;
 const maxScale = 4;
 
@@ -109,58 +114,59 @@ function createGrid(rows, columns) {
     let pixelSize = gridSize / rows;
     grid.style.gridTemplateRows = `repeat(${rows}, ${pixelSize}px)`;
     grid.style.gridTemplateColumns = `repeat(${columns}, ${pixelSize}px)`;
-    let totalCells = rows * columns;
-    for (let i = 0; i < totalCells; i++) {
-        let pixel = document.createElement('div');
-        pixel.classList.add('pixel');
-        pixel.style.width = `${pixelSize}px`;
-        pixel.style.height = `${pixelSize}px`;
-        pixel.addEventListener('mousedown', () => {
-            isPainting = true;
-            let previousColor = pixel.style.backgroundColor;
-            let newColor = '';
-            if (currentTool === 'paintbrush') {
-                newColor = colorPicker.value;
-                pixel.style.backgroundColor = newColor;
-            } else if (currentTool === 'eraser') {
-                newColor = '';
-                pixel.style.backgroundColor = newColor;
-            } else if (currentTool === 'eyedropper') {
-                let color = pixel.style.backgroundColor;
-                if (color) {
-                    colorPicker.value = rgbToHex(color);
-                    setActiveTool('paintbrush');
-                };
-            };
-            if (previousColor !== newColor) {
-                recordChange(pixel, previousColor, newColor);
-            };
-        });
-        pixel.addEventListener('mouseenter', () => {
-            if (isPainting) {
-                let previousColor = pixel.style.backgroundColor;
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+            let pixel = document.createElement('div');
+            pixel.classList.add('pixel');
+            pixel.style.width = `${pixelSize}px`;
+            pixel.style.height = `${pixelSize}px`;
+            pixel.dataset.row = row;
+            pixel.dataset.col = column;
+            pixel.addEventListener('mousedown', () => {
+                isPainting = true;
+                currentAction = [];
+                redoList = [];
                 let newColor = '';
                 if (currentTool === 'paintbrush') {
                     newColor = colorPicker.value;
-                    pixel.style.backgroundColor = newColor;
+                    paintPixels(pixel, newColor);
                 } else if (currentTool === 'eraser') {
                     newColor = '';
-                    pixel.style.backgroundColor = newColor;
+                    paintPixels(pixel, newColor);
+                } else if (currentTool === 'eyedropper') {
+                    let color = pixel.style.backgroundColor;
+                    if (color) {
+                        colorPicker.value = rgbToHex(color);
+                        setActiveTool('paintbrush');
+                    };
                 };
-                if (previousColor !== newColor) {
-                    recordChange(pixel, previousColor, newColor);
+            });
+            pixel.addEventListener('mouseenter', () => {
+                if (isPainting) {
+                    let newColor = '';
+                    if (currentTool === 'paintbrush') {
+                        newColor = colorPicker.value;
+                        paintPixels(pixel, newColor);
+                    } else if (currentTool === 'eraser') {
+                        newColor = '';
+                        paintPixels(pixel, newColor);
+                    };
                 };
+            });
+            pixel.addEventListener('dragstart', e => e.preventDefault());
+            grid.appendChild(pixel);
             };
-        });
-        pixel.addEventListener('dragstart', e => e.preventDefault());
-        grid.appendChild(pixel);
-        };
+
+            };
 };
 
 createGrid(parseInt(rowsInput.value), parseInt(rowsInput.value));
 
 document.addEventListener('mouseup', () => {
     isPainting = false;
+    if (currentAction && currentAction.length > 0) {
+        recordChange();
+    };
 });
 
 clearButton.addEventListener('click', () => {
@@ -179,12 +185,13 @@ colorOptions.forEach(colorOption => {
 
 saveButton.addEventListener('click', () => {
     const grid = document.getElementById('grid');
-    grid.style.gap = '0px';
     grid.style.border = 'none';
     grid.style.backgroundColor = 'white';
-    grid.querySelectorAll('.pixel').forEach(pixel => {
-        pixel.style.border = 'none';
-    });
+    if (gridLinesVisible) {
+        grid.querySelectorAll('.pixel').forEach(pixel => {
+            pixel.classList.add('noGrid');
+        });
+    }
     html2canvas(grid, {
         backgroundColor: null,
         useCORS: true
@@ -194,12 +201,13 @@ saveButton.addEventListener('click', () => {
         link.href = canvas.toDataURL('image/png');
         link.click();
     });
-    grid.style.gap = '1px';
     grid.style.border = '2px solid grey';
     grid.style.backgroundColor = 'lightgrey';
-    grid.querySelectorAll('.pixel').forEach(pixel => {
-        pixel.style.border = '';
-    });
+    if (gridLinesVisible) {
+        grid.querySelectorAll('.pixel').forEach(pixel => {
+            pixel.classList.remove('noGrid');
+        });
+    };
 });
 
 makeGridButton.addEventListener('click', () => {
@@ -238,27 +246,65 @@ function rgbToHex(rgb) {
     return ('#' + match.slice(0, 3).map(x => parseInt(x).toString(16).padStart(2, '0')).join(''));
 };
 
-function recordChange(pixel, previousColor, newColor) {
-    historyList.push({
-        pixel: pixel,
-        previousColor: previousColor,
-        newColor: newColor
-    });
-    redoList = [];
+function recordChange() {
+    historyList.push([...currentAction]);
+    currentAction = [];
 };
 
 undoButton.addEventListener('click', () => {
-    let action = historyList.pop();
-    if (action) {
-        action.pixel.style.backgroundColor = action.previousColor;
-        redoList.push(action);
-    };
+    if (historyList.length === 0) return;
+    let lastAction = historyList.pop();
+    redoList.push([...lastAction]);
+    lastAction.forEach(change => {
+        change.pixel.style.backgroundColor = change.previousColor;
+    });
 });
 
 redoButton.addEventListener('click', () => {
-    let action = redoList.pop();
-    if (action) {
-        action.pixel.style.backgroundColor = action.newColor;
-        historyList.push(action);
+    if (redoList.length === 0) return;
+    let nextAction = redoList.pop();
+    historyList.push([...nextAction]);
+    nextAction.forEach(change => {
+        change.pixel.style.backgroundColor = change.newColor;
+    });
+});
+
+toggleGridButton.addEventListener('click', () => {
+    gridLinesVisible = !gridLinesVisible;
+    if (gridLinesVisible) {
+        grid.classList.remove('noGrid');
+        toggleGridButton.classList.remove('active');
+    } else {
+        grid.classList.add('noGrid');
+        toggleGridButton.classList.add('active');
     };
 });
+
+brushSizeInput.addEventListener('input', () => {
+    brushSize = parseInt(brushSizeInput.value);
+});
+
+function paintPixels(startPixel, color) {
+    let startRow = parseInt(startPixel.dataset.row);
+    let startColumn = parseInt(startPixel.dataset.col);
+    let half = Math.floor(brushSize / 2);
+    for (let r = startRow - half; r <= startRow + half; r++) {
+        for (let c = startColumn - half; c <= startColumn + half; c++) {
+            let target = document.querySelector(`.pixel[data-row="${r}"][data-col="${c}"]`);
+            if (target) {
+                let alreadyRecorded = currentAction.some(entry => entry.pixel === target);
+                if (!alreadyRecorded) {
+                    let previousColor = target.style.backgroundColor || '';
+                    currentAction.push({
+                        pixel: target,
+                        previousColor: previousColor,
+                        newColor: color
+                    });
+                } else {
+                    alreadyRecorded.newColor = color;
+                };
+                target.style.backgroundColor = color;
+            };
+        };
+    };
+};
