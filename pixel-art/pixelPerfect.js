@@ -1,4 +1,5 @@
 const grid = document.getElementById('grid');
+const gridContainer = document.getElementById('gridContainer');
 const colorPicker = document.getElementById('colorPicker');
 const clearButton = document.getElementById('clearButton');
 const palette = document.getElementById('palette');
@@ -16,6 +17,23 @@ let isPainting = false;
 let currentTool = 'paintbrush';
 let historyList = [];
 let redoList = [];
+let scale = 1
+const minScale = 1;
+const maxScale = 4;
+
+gridContainer.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    let rect = grid.getBoundingClientRect();
+    let mouseX = e.clientX - rect.left;
+    let mouseY = e.clientY - rect.top;
+    let previousScale = scale;
+    scale += e.deltaY < 0 ? 0.1 : -0.1;
+    scale = Math.min(maxScale, Math.max(minScale, scale));
+    let dx = mouseX / previousScale;
+    let dy = mouseY / previousScale;
+    grid.style.transformOrigin = `${dx}px ${dy}px`;
+    grid.style.transform = `scale(${scale})`;
+})
 
 const baseColors = [
     { name: 'red', hue: 0 },

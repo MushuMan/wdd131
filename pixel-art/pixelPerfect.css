@@ -35,7 +35,8 @@ h2 {
 .tools {
     grid-column: 2 / 3;
     grid-row: 2 / 3;
-    margin-bottom: 1rem;
+    margin-bottom: 5px;
+    padding-bottom: 0px;
     display: flex;
     gap: 20px;
     align-items: center;
@@ -105,6 +106,8 @@ h2 {
 #gridContainer {
     grid-column: 2 / 3;
     margin: 0 auto;
+    overflow: scroll;
+    position: relative;
 }
 
 #grid {
@@ -115,6 +118,8 @@ h2 {
     background-color: lightgrey;
     padding: 4px;
     border: 2px solid grey;
+    transform-origin: 0 0;
+    transition: transform 0.1s ease;
 }
 
 .pixel {
