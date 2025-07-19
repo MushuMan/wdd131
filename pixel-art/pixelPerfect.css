@@ -3,7 +3,7 @@
 body {
     font-family: "Exo 2", Helvetica, sans-serif;
     background-color: #1A2B63;
-    color: #6982BD;
+    color: #8798c0;
     margin: 0 auto;
 }
 
@@ -73,7 +73,7 @@ h2 {
     margin-left: 0;
     padding-left: 0;
     background-color: #2A3D76;
-    color: #6982BD;
+    color: #8798c0;
     font-size: 20px;
     border-color: black;
     border-radius: 5px;
@@ -85,7 +85,7 @@ h2 {
     background-color: #2A3D76;
     border-color: black;
     border-radius: 5px;
-    color: #6982BD;
+    color: #8798c0;
     font-size: 20px;
     height: 30px;
     font-weight: bold;
