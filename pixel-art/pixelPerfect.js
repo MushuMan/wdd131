@@ -2,11 +2,10 @@ const grid = document.getElementById('grid');
 const colorPicker = document.getElementById('colorPicker');
 const clearButton = document.getElementById('clearButton');
 const palette = document.getElementById('palette');
-const colorOptions = palette.querySelectorAll('.colorOption');
 const saveButton = document.getElementById('saveButton');
 const rowsInput = document.getElementById('rowsInput');
-const columnsInput = document.getElementById('columnsInput');
-const pixelSizeInput = document.getElementById('pixelSizeInput');
+// const columnsInput = document.getElementById('columnsInput');
+// const pixelSizeInput = document.getElementById('pixelSizeInput');
 const makeGridButton = document.getElementById('makeGridButton');
 const eraserButton = document.getElementById('eraserButton');
 const paintbrushButton = document.getElementById('paintbrushButton');
@@ -18,8 +17,78 @@ let currentTool = 'paintbrush';
 let historyList = [];
 let redoList = [];
 
-function createGrid(rows, columns, pixelSize = 20) {
+const baseColors = [
+    { name: 'red', hue: 0 },
+    { name: 'yellow', hue: 60 },
+    { name: 'green', hue: 120 },
+    { name: 'cyan', hue: 180 },
+    { name: 'blue', hue: 240 },
+    { name: 'magenta', hue: 300},
+    { name: 'black', hue: 0, isGray: true, lightnessValues: [10, 20, 30, 40] },
+    { name: 'white', hue: 0, isGray: true, lightnessValues: [90, 95, 98, 100] }
+];
+
+function hslToHex(h, s, l) {
+    s /= 100;
+    l /= 100;
+    let c = (1 - Math.abs(2 * l - 1)) * s;
+    let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    let m = l - c / 2;
+    let r = 0, g = 0, b = 0
+    if (h >= 0 && h < 60) {
+        r = c; g = x; b = 0;
+    } else if (h < 120) {
+        r = x; g = c; b = 0;
+    } else if (h < 180) {
+        r = 0; g = c; b = x;
+    } else if (h < 240) {
+        r = 0; g = x; b = c;
+    } else if (h < 300) {
+        r = x; g = 0; b = c;
+    } else {
+        r = c; g = 0; b = x;
+    };
+    let toHex = val => Math.round((val + m) * 255).toString(16).padStart(2, '0');
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
+function createPalette() {
+    palette.innerHTML = '';
+    const defaultLightness = [25, 45, 65, 85];
+    baseColors.forEach(color => {
+        let lightnessValues = color.lightnessValues || defaultLightness;
+        lightnessValues.forEach(lightness => {
+            let h = 0, s = 0, l = lightness;
+            if (color.isGray) {
+                h = 0;
+                s = 0;
+            } else if (typeof color.hue === 'number') {
+                h = color.hue;
+                s = 100;
+            } else {
+                console.warn('Skipping invalid color:', color);
+                return;
+            };
+            let hexColor = hslToHex(h, s, l);
+            let colorCell = document.createElement('div');
+            colorCell.className = 'colorOption';
+            colorCell.style.backgroundColor = hexColor;
+            colorCell.setAttribute('data-color', hexColor);
+            colorCell.title = `${color.name} ${l}%`;
+            palette.appendChild(colorCell);
+            console.log(`Generated ${hexColor} for ${color.name}`);
+        });
+    });
+};
+
+createPalette();
+
+const colorOptions = palette.querySelectorAll('.colorOption');
+
+function createGrid(rows, columns) {
     grid.innerHTML = '';
+    const gridSize = 480;
+    let pixelSize = gridSize / rows;
     grid.style.gridTemplateRows = `repeat(${rows}, ${pixelSize}px)`;
     grid.style.gridTemplateColumns = `repeat(${columns}, ${pixelSize}px)`;
     let totalCells = rows * columns;
@@ -70,7 +139,7 @@ function createGrid(rows, columns, pixelSize = 20) {
         };
 };
 
-createGrid(parseInt(rowsInput.value), parseInt(columnsInput.value));
+createGrid(parseInt(rowsInput.value), parseInt(rowsInput.value));
 
 document.addEventListener('mouseup', () => {
     isPainting = false;
@@ -117,12 +186,9 @@ saveButton.addEventListener('click', () => {
 
 makeGridButton.addEventListener('click', () => {
     let rows = parseInt(rowsInput.value);
-    let columns = parseInt(columnsInput.value);
-    let pixelSize = parseInt(pixelSizeInput.value);
+    // let columns = parseInt(columnsInput.value);
     if (isNaN(rows) || rows < 1) rows = 16;
-    if (isNaN(columns) || columns < 1) columns = 16;
-    if (isNaN(pixelSize) || pixelSize < 5) pixelSize = 20;
-    createGrid(rows, columns, pixelSize);
+    createGrid(rows, rows);
 });
 
 function setActiveTool(tool) {
